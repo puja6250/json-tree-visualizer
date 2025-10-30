@@ -1,53 +1,62 @@
-let id = 0;
+// utils/buildTree.js
 
-function buildTree(data) {
+let nodeId = 0;
+
+function createNode(label, x, y, type = "object") {
+  return {
+    id: String(nodeId++),
+    position: { x, y },
+    data: { label },
+    type,
+  };
+}
+
+export default function buildTree(jsonData) {
+  nodeId = 0;
   const nodes = [];
   const edges = [];
   const pathMap = {};
 
-  function traverse(value, parentId = null, path = "$") {
-    const nodeId = `${id++}`;
-    pathMap[path] = nodeId;
+  let xSpacing = 250; // horizontal distance between nodes
+  let ySpacing = 120; // vertical distance between levels
 
-    let label;
-    let typeColor = "#60a5fa"; // default blue for objects
+  function traverse(obj, depth = 0, x = 0, parent = null, path = "") {
+    let nodeType =
+      typeof obj === "object"
+        ? Array.isArray(obj)
+          ? "array"
+          : "object"
+        : "value";
 
-    if (Array.isArray(value)) {
-      label = "Array";
-      typeColor = "#22c55e"; // green
-    } else if (typeof value === "object" && value !== null) {
-      label = "Object";
-      typeColor = "#6366f1"; // purple
-    } else {
-      label = `${value}`;
-      typeColor = "#f59e0b"; // orange
+    const node = createNode(
+      path.split(".").pop() || "root",
+      x,
+      depth * ySpacing,
+      nodeType
+    );
+    nodes.push(node);
+
+    if (parent) {
+      edges.push({ id: `${parent.id}-${node.id}`, source: parent.id, target: node.id });
     }
 
-    nodes.push({
-      id: nodeId,
-      data: { label: `${path}: ${label}` },
-      position: { x: Math.random() * 500, y: id * 60 },
-      style: {
-        border: "1px solid #999",
-        padding: 10,
-        borderRadius: 8,
-        backgroundColor: typeColor,
-        color: "white",
-      },
-    });
+    pathMap[path] = node.id;
 
-    if (parentId) edges.push({ id: `${parentId}-${nodeId}`, source: parentId, target: nodeId });
-
-    if (typeof value === "object" && value !== null) {
-      Object.entries(value).forEach(([key, val]) => {
-        const newPath = Array.isArray(value) ? `${path}[${key}]` : `${path}.${key}`;
-        traverse(val, nodeId, newPath);
+    if (typeof obj === "object" && obj !== null) {
+      const keys = Object.keys(obj);
+      keys.forEach((key, index) => {
+        const childX = x + (index - (keys.length - 1) / 2) * xSpacing;
+        traverse(obj[key], depth + 1, childX, node, `${path}.${key}`);
       });
+    } else {
+      // leaf node
+      const valueNode = createNode(String(obj), x, (depth + 1) * ySpacing, "value");
+      nodes.push(valueNode);
+      edges.push({ id: `${node.id}-${valueNode.id}`, source: node.id, target: valueNode.id });
     }
   }
 
-  traverse(data);
+  traverse(jsonData, 0, 0, null, "root");
+
   return { nodes, edges, pathMap };
 }
-
-export default buildTree;
