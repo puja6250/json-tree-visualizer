@@ -1,12 +1,21 @@
-/* 🌟 Base Styles */
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #ffe6f0; /* soft light pink */
+  background-color: #0077cc; /* 🌤️ soft light blue */
   color: #333;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0;
-  padding: 0;
+  transition: background-color 0.3s ease;
 }
+
+/* Optional: container slightly lighter shade for contrast */
+.container {
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 102, 204, 0.1);
+}
+
+/* dark mode */
+.dark-mode {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
 
 /* 🌟 Main Container */
 .container {
