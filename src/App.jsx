@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import JsonInput from "./components/JsonInput";
 import TreeCanvas from "./components/TreeCanvas";
 import SearchBar from "./components/SearchBar";
@@ -13,6 +13,15 @@ function App() {
   const [pathMap, setPathMap] = useState({});
   const [searchResult, setSearchResult] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+
+  // ✅ Apply or remove dark mode class on body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   // ✅ Build tree data
   const handleVisualize = (data) => {
@@ -59,7 +68,7 @@ function App() {
     alert(`📋 Copied path: ${path}`);
   };
 
-  // ✅ Your return should be INSIDE the function
+  // ✅ UI layout
   return (
     <div
       className={`flex items-center justify-center min-h-screen transition-all duration-300 ${
@@ -92,7 +101,7 @@ function App() {
         {/* Search + Buttons Section */}
         {jsonData && (
           <div className="w-full flex flex-col items-center gap-4">
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center items-center space-x-5 mt-3">
               <SearchBar onSearch={handleSearch} />
               <button
                 onClick={handleClear}
